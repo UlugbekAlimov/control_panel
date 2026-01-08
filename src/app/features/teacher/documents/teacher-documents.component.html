@@ -1,0 +1,57 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900">Документы</h1>
+    <p class="mt-2 text-gray-600">Загрузка и проверка документов</p>
+  </div>
+
+  <div class="flex justify-end">
+    <app-button variant="primary" (clicked)="openModal()">Добавить документ</app-button>
+  </div>
+
+  <app-card title="Журнал документов">
+    <app-table
+      [columns]="columns"
+      [data]="documents"
+      [rowTemplate]="rowTemplate"
+      [emptyMessage]="'Документы не найдены'"
+    >
+      <ng-template #rowTemplate let-row>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.name }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.uploader }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">
+          <span
+            class="px-2 py-1 text-xs rounded-full"
+            [class.bg-yellow-100]="row.status === 'pending'"
+            [class.text-yellow-700]="row.status === 'pending'"
+            [class.bg-green-100]="row.status === 'approved'"
+            [class.text-green-700]="row.status === 'approved'"
+            [class.bg-red-100]="row.status === 'rejected'"
+            [class.text-red-700]="row.status === 'rejected'"
+          >
+            {{ getStatusLabel(row.status) }}
+          </span>
+        </td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.date }}</td>
+      </ng-template>
+    </app-table>
+  </app-card>
+
+  <app-modal [show]="showModal" [title]="'Загрузка документа'" size="lg" (closed)="closeModal()">
+    <form class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <app-select
+          label="Тип документа"
+          [options]="typeOptions"
+          [(ngModel)]="documentType"
+          name="documentType"
+        ></app-select>
+        <app-input label="Файл" type="file"></app-input>
+      </div>
+      <app-input label="Комментарий" [(ngModel)]="comment" name="comment"></app-input>
+      <div class="flex justify-end gap-2">
+        <app-button variant="outline" type="button" (clicked)="closeModal()">Отмена</app-button>
+        <app-button variant="primary" type="button" (clicked)="closeModal()">Отправить</app-button>
+      </div>
+    </form>
+  </app-modal>
+</div>

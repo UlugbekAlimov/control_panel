@@ -1,0 +1,47 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900">Заявки</h1>
+    <p class="mt-2 text-gray-600">Отправка обращений в военкомат</p>
+  </div>
+
+  <app-card title="Новая заявка">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <app-select
+        label="Тип заявки"
+        [options]="requestOptions"
+        [(ngModel)]="requestType"
+      ></app-select>
+      <app-input label="Комментарий" [(ngModel)]="comment"></app-input>
+    </div>
+    <div class="mt-4 flex justify-end">
+      <app-button variant="primary" (clicked)="submit()">Отправить</app-button>
+    </div>
+  </app-card>
+
+  <app-card title="История заявок">
+    <app-table
+      [columns]="columns"
+      [data]="requests"
+      [rowTemplate]="rowTemplate"
+      [emptyMessage]="'Заявки не найдены'"
+    >
+      <ng-template #rowTemplate let-row>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ row.type }}</td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ row.createdAt }}</td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+          <span
+            class="px-2 py-1 text-xs rounded-full"
+            [class.bg-yellow-100]="row.status === 'pending'"
+            [class.text-yellow-700]="row.status === 'pending'"
+            [class.bg-green-100]="row.status === 'approved'"
+            [class.text-green-700]="row.status === 'approved'"
+            [class.bg-red-100]="row.status === 'rejected'"
+            [class.text-red-700]="row.status === 'rejected'"
+          >
+            {{ getStatusLabel(row.status) }}
+          </span>
+        </td>
+      </ng-template>
+    </app-table>
+  </app-card>
+</div>

@@ -1,0 +1,109 @@
+@if (citizen()) {
+  <div class="space-y-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">Карточка призывника</h1>
+        <p class="mt-2 text-gray-600">Полная информация по гражданину</p>
+      </div>
+      <app-button variant="outline" (clicked)="goBack()">Назад к списку</app-button>
+    </div>
+
+    <app-card title="Личные данные">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-900">
+        <div>
+          <span class="text-gray-500">ФИО:</span>
+          <div class="font-medium">
+            {{ citizen()!.lastName }} {{ citizen()!.firstName }} {{ citizen()!.middleName || '' }}
+          </div>
+        </div>
+        <div>
+          <span class="text-gray-500">Дата рождения:</span>
+          <div class="font-medium">{{ formatDate(citizen()!.birthDate) }}</div>
+        </div>
+        <div>
+          <span class="text-gray-500">Статус:</span>
+          <div class="font-medium">{{ getStatusLabel(citizen()!.status) }}</div>
+        </div>
+        <div>
+          <span class="text-gray-500">Категория годности:</span>
+          <div class="font-medium">{{ getFitnessLabel(citizen()!.fitnessCategory) }}</div>
+        </div>
+        <div>
+          <span class="text-gray-500">Адрес регистрации:</span>
+          <div class="font-medium">{{ citizen()!.registrationAddress }}</div>
+        </div>
+        <div>
+          <span class="text-gray-500">Адрес фактический:</span>
+          <div class="font-medium">{{ citizen()!.actualAddress || '-' }}</div>
+        </div>
+        <div>
+          <span class="text-gray-500">Телефон:</span>
+          <div class="font-medium">{{ citizen()!.phoneNumber || '-' }}</div>
+        </div>
+        <div>
+          <span class="text-gray-500">Email:</span>
+          <div class="font-medium">{{ citizen()!.email || '-' }}</div>
+        </div>
+      </div>
+    </app-card>
+
+    <app-card title="Отсрочки">
+      <div class="text-sm text-gray-700">
+        @if (getActiveDeferment()) {
+          <div class="font-medium text-green-700">Есть активная отсрочка</div>
+          <div>Основание: {{ getActiveDeferment()!.reason }}</div>
+          <div>Дата: {{ formatDate(getActiveDeferment()!.startDate) }}</div>
+          <div>Документ: {{ getActiveDeferment()!.documentNumber || '-' }}</div>
+        } @else {
+          <div class="text-gray-500">Активных отсрочек нет</div>
+        }
+      </div>
+    </app-card>
+
+    <app-card title="История образования">
+      @if (educationRecords().length) {
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm text-gray-900">
+            <thead class="text-left text-gray-500">
+              <tr>
+                <th class="py-2">Тип</th>
+                <th class="py-2">Учебное заведение</th>
+                <th class="py-2">Начало</th>
+                <th class="py-2">Окончание</th>
+                <th class="py-2">Статус</th>
+                <th class="py-2">Отсрочка</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (record of educationRecords(); track record.id) {
+                <tr class="border-t border-gray-100">
+                  <td class="py-2">{{ getEducationTypeLabel(record.educationType) }}</td>
+                  <td class="py-2">{{ record.institutionName }}</td>
+                  <td class="py-2">{{ formatDate(record.startDate) }}</td>
+                  <td class="py-2">{{ formatDate(record.endDate) }}</td>
+                  <td class="py-2">{{ record.isActive ? 'Активно' : 'Завершено' }}</td>
+                  <td class="py-2">{{ record.hasDeferment ? 'Есть' : 'Нет' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <div class="text-sm text-gray-500">Данные об обучении отсутствуют</div>
+      }
+    </app-card>
+
+    <app-card title="Семейные обстоятельства">
+      <div class="text-sm text-gray-500">Нет данных. Источники: ЗАГС.</div>
+    </app-card>
+
+    <app-card title="Медицинское заключение">
+      <div class="text-sm text-gray-500">Нет данных. Источник: ВВК.</div>
+    </app-card>
+  </div>
+} @else {
+  <div class="space-y-4">
+    <h1 class="text-2xl font-bold text-gray-900">Гражданин не найден</h1>
+    <app-button variant="outline" (clicked)="goBack()">Вернуться к списку</app-button>
+  </div>
+}

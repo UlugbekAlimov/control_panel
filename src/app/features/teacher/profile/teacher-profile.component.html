@@ -1,0 +1,56 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900">Профиль</h1>
+    <p class="mt-2 text-gray-600">Просмотр и редактирование данных преподавателя</p>
+  </div>
+
+  <app-card title="Данные профиля">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
+      <div>
+        <div class="text-gray-500">ФИО</div>
+        <div class="font-medium text-gray-900">{{ profile.fullName }}</div>
+      </div>
+      <div>
+        <div class="text-gray-500">Должность</div>
+        <div class="font-medium text-gray-900">{{ profile.position }}</div>
+      </div>
+      <div>
+        <div class="text-gray-500">Тип учреждения</div>
+        <div class="font-medium text-gray-900">{{ profile.institutionType }}</div>
+      </div>
+      <div>
+        <div class="text-gray-500">Учреждение</div>
+        <div class="font-medium text-gray-900">{{ profile.institutionName }}</div>
+      </div>
+    </div>
+    <div class="mt-4 flex justify-end">
+      <app-button variant="primary" (clicked)="openEditModal()">Редактировать</app-button>
+    </div>
+  </app-card>
+
+  <app-card title="Ограничения доступа">
+    <div class="text-sm text-gray-600">
+      Доступ только к студентам и группам вашего учреждения.
+    </div>
+  </app-card>
+
+  <app-modal [show]="showModal" [title]="'Редактировать профиль'" size="lg" (closed)="closeModal()">
+    <form class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <app-input label="ФИО" [(ngModel)]="profile.fullName" name="fullName"></app-input>
+        <app-input label="Должность" [(ngModel)]="profile.position" name="position"></app-input>
+        <app-select
+          label="Тип учреждения"
+          [options]="institutionTypes"
+          [(ngModel)]="profile.institutionType"
+          name="institutionType"
+        ></app-select>
+        <app-input label="Учреждение" [(ngModel)]="profile.institutionName" name="institutionName"></app-input>
+      </div>
+      <div class="flex justify-end gap-2">
+        <app-button variant="outline" type="button" (clicked)="closeModal()">Отмена</app-button>
+        <app-button variant="primary" type="button" (clicked)="closeModal()">Сохранить</app-button>
+      </div>
+    </form>
+  </app-modal>
+</div>

@@ -1,0 +1,91 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900">Реестр студентов</h1>
+    <p class="mt-2 text-gray-600">Студенты вашего учреждения и подтверждение обучения</p>
+  </div>
+
+  <app-card>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <app-input
+        label="Поиск по ФИО"
+        placeholder="Фамилия, имя..."
+        [(ngModel)]="searchQuery"
+      ></app-input>
+      <app-input
+        label="ИИН/паспорт"
+        placeholder="AA123456"
+        [(ngModel)]="docQuery"
+      ></app-input>
+      <app-select
+        label="Статус"
+        [options]="statusOptions"
+        [(ngModel)]="statusFilter"
+      ></app-select>
+      <app-input label="Дата начала" type="date" [(ngModel)]="startDate"></app-input>
+      <app-input label="Дата окончания" type="date" [(ngModel)]="endDate"></app-input>
+    </div>
+  </app-card>
+
+  <app-card>
+    <app-table
+      [columns]="columns"
+      [data]="filteredStudents"
+      [rowTemplate]="rowTemplate"
+      [actionsTemplate]="actionsTemplate"
+      [emptyMessage]="'Студенты не найдены'"
+    >
+      <ng-template #rowTemplate let-row>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.fullName }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.documentId || '-' }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ getStatusLabel(row.status) }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.startDate }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.endDate || '-' }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.group }}</td>
+      </ng-template>
+
+      <ng-template #actionsTemplate let-row>
+        <div class="flex items-center gap-2">
+          <app-button variant="outline" size="sm" (clicked)="openCard(row)">Карточка</app-button>
+        </div>
+      </ng-template>
+    </app-table>
+  </app-card>
+
+  <app-modal [show]="showModal" [title]="'Карточка студента'" size="lg" (closed)="closeModal()">
+    @if (selectedStudent) {
+      <div class="space-y-4 text-sm text-gray-700">
+        <div>
+          <div class="text-gray-500">ФИО</div>
+          <div class="font-medium text-gray-900">{{ selectedStudent.fullName }}</div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <div class="text-gray-500">Документ</div>
+            <div class="font-medium text-gray-900">{{ selectedStudent.documentId || '-' }}</div>
+          </div>
+          <div>
+            <div class="text-gray-500">Статус</div>
+            <div class="font-medium text-gray-900">{{ getStatusLabel(selectedStudent.status) }}</div>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <div class="text-gray-500">Начало обучения</div>
+            <div class="font-medium text-gray-900">{{ selectedStudent.startDate }}</div>
+          </div>
+          <div>
+            <div class="text-gray-500">Окончание</div>
+            <div class="font-medium text-gray-900">{{ selectedStudent.endDate || '-' }}</div>
+          </div>
+        </div>
+        <div>
+          <div class="text-gray-500">История изменений</div>
+          <ul class="mt-2 space-y-1">
+            <li>01.09.2023 — Зачислен (ИТ-21)</li>
+            <li>10.01.2026 — Подтверждение обучения</li>
+          </ul>
+        </div>
+      </div>
+    }
+  </app-modal>
+</div>

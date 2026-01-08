@@ -1,0 +1,48 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900">Проверка оснований отсрочки</h1>
+    <p class="mt-2 text-gray-600">Проверка документов и решений по отсрочке</p>
+  </div>
+
+  <app-card>
+    <app-table
+      [columns]="columns"
+      [data]="items"
+      [rowTemplate]="rowTemplate"
+      [actionsTemplate]="actionsTemplate"
+      [emptyMessage]="'Заявок нет'"
+    >
+      <ng-template #rowTemplate let-row>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.student }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.institution }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.document }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.submittedAt }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ getStatusLabel(row.status) }}</td>
+      </ng-template>
+
+      <ng-template #actionsTemplate let-row>
+        <div class="flex items-center gap-2">
+          <app-button variant="success" size="sm" (clicked)="openDecision(row, 'approved')">Утвердить</app-button>
+          <app-button variant="outline" size="sm" (clicked)="openDecision(row, 'needs_work')">Доработка</app-button>
+          <app-button variant="danger" size="sm" (clicked)="openDecision(row, 'rejected')">Отказать</app-button>
+        </div>
+      </ng-template>
+    </app-table>
+  </app-card>
+
+  <app-modal [show]="showModal" [title]="'Решение по отсрочке'" size="lg" (closed)="closeModal()">
+    <div class="space-y-4">
+      <div class="text-sm text-gray-700">
+        @if (selected) {
+          <div>Студент: <span class="font-medium">{{ selected.student }}</span></div>
+          <div>Документ: <span class="font-medium">{{ selected.document }}</span></div>
+        }
+      </div>
+      <app-input label="Комментарий" [(ngModel)]="comment"></app-input>
+      <div class="flex justify-end gap-2">
+        <app-button variant="outline" type="button" (clicked)="closeModal()">Отмена</app-button>
+        <app-button variant="primary" type="button" (clicked)="applyDecision()">Сохранить</app-button>
+      </div>
+    </div>
+  </app-modal>
+</div>

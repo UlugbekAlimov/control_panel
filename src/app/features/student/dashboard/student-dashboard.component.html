@@ -1,0 +1,68 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900">Панель студента</h1>
+    <p class="mt-2 text-gray-600">Актуальный статус и важные уведомления</p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <app-card title="Текущий статус">
+      <div class="text-2xl font-semibold text-gray-900">{{ currentStatus() }}</div>
+      <div class="mt-2 text-sm text-gray-600">Последнее обновление: 12.01.2026</div>
+    </app-card>
+
+    <app-card title="Отсрочка">
+      <div class="text-sm text-gray-700">
+        <div class="font-medium">
+          {{ defermentInfo().active ? 'Есть' : 'Нет' }}
+        </div>
+        <div class="mt-2">Основание: {{ defermentInfo().reason }}</div>
+        <div class="mt-1">Срок действия: {{ defermentInfo().expiresAt }}</div>
+      </div>
+    </app-card>
+
+    <app-card title="Быстрые действия">
+      <div class="space-y-2">
+        <app-button variant="primary">Отправить данные об учебе</app-button>
+        <app-button variant="outline">Загрузить справку</app-button>
+      </div>
+    </app-card>
+  </div>
+
+  <app-card title="Быстрые предупреждения">
+    <div class="space-y-2">
+      @for (alert of alerts(); track alert.id) {
+        <div
+          class="rounded-lg px-4 py-3 text-sm"
+          [class.bg-yellow-50]="alert.type === 'warning'"
+          [class.text-yellow-800]="alert.type === 'warning'"
+          [class.bg-blue-50]="alert.type === 'info'"
+          [class.text-blue-800]="alert.type === 'info'"
+        >
+          {{ alert.message }}
+        </div>
+      }
+    </div>
+  </app-card>
+
+  <app-card title="Последние уведомления и события">
+    <div class="space-y-3">
+      @for (event of events(); track event.id) {
+        <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+          <div>
+            <div class="font-medium text-gray-900">{{ event.title }}</div>
+            <div class="text-sm text-gray-500">{{ event.date }}</div>
+          </div>
+          <span
+            class="px-2 py-1 text-xs rounded-full"
+            [class.bg-blue-100]="event.status === 'new'"
+            [class.text-blue-700]="event.status === 'new'"
+            [class.bg-gray-100]="event.status === 'info'"
+            [class.text-gray-600]="event.status === 'info'"
+          >
+            {{ event.status === 'new' ? 'Новое' : 'Инфо' }}
+          </span>
+        </div>
+      }
+    </div>
+  </app-card>
+</div>

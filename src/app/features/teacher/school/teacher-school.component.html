@@ -1,0 +1,44 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900">Подсистема "Школа"</h1>
+    <p class="mt-2 text-gray-600">Регистрация начала обучения, выпуска и перевода по классам</p>
+  </div>
+
+  <div class="flex justify-end">
+    <app-button variant="primary" (clicked)="openModal()">Добавить запись</app-button>
+  </div>
+
+  <app-card title="Записи по школе">
+    <app-table
+      [columns]="columns"
+      [data]="records"
+      [rowTemplate]="rowTemplate"
+      [emptyMessage]="'Записей нет'"
+    >
+      <ng-template #rowTemplate let-row>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.studentName }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.className }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.startDate }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.endDate || '-' }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.document }}</td>
+      </ng-template>
+    </app-table>
+  </app-card>
+
+  <app-modal [show]="showModal" [title]="'Новая запись'" size="lg" (closed)="closeModal()">
+    <form class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <app-input label="Студент" [(ngModel)]="formData.studentName" name="studentName"></app-input>
+        <app-input label="Класс/параллель" [(ngModel)]="formData.className" name="className"></app-input>
+        <app-input label="Дата начала" type="date" [(ngModel)]="formData.startDate" name="startDate"></app-input>
+        <app-input label="Дата выпуска" type="date" [(ngModel)]="formData.endDate" name="endDate"></app-input>
+        <app-input label="Документ-основание" [(ngModel)]="formData.document" name="document"></app-input>
+        <app-input label="Файл" type="file"></app-input>
+      </div>
+      <div class="flex justify-end gap-2">
+        <app-button variant="outline" type="button" (clicked)="closeModal()">Отмена</app-button>
+        <app-button variant="primary" type="button" (clicked)="addRecord()">Сохранить</app-button>
+      </div>
+    </form>
+  </app-modal>
+</div>

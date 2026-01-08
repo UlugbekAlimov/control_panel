@@ -1,0 +1,55 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900">Подсистема "ВУЗ / Колледж"</h1>
+    <p class="mt-2 text-gray-600">Регистрация зачислений и отчислений на очную форму</p>
+  </div>
+
+  <div class="flex justify-end">
+    <app-button variant="primary" (clicked)="openModal()">Добавить запись</app-button>
+  </div>
+
+  <app-card title="Реестр студентов">
+    <app-table
+      [columns]="columns"
+      [data]="records"
+      [rowTemplate]="rowTemplate"
+      [actionsTemplate]="actionsTemplate"
+      [emptyMessage]="'Записей нет'"
+    >
+      <ng-template #rowTemplate let-row>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.studentName }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.faculty }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.course }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.form }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.startDate }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.endDate }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ getStatusLabel(row.status) }}</td>
+      </ng-template>
+
+      <ng-template #actionsTemplate let-row>
+        <div class="flex items-center gap-2">
+          <app-button variant="danger" size="sm" (clicked)="expel(row)">Отчислить</app-button>
+        </div>
+      </ng-template>
+    </app-table>
+  </app-card>
+
+  <app-modal [show]="showModal" [title]="'Регистрация поступления'" size="lg" (closed)="closeModal()">
+    <form class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <app-input label="Студент" [(ngModel)]="formData.studentName" name="studentName"></app-input>
+        <app-input label="Факультет/специальность" [(ngModel)]="formData.faculty" name="faculty"></app-input>
+        <app-input label="Курс" [(ngModel)]="formData.course" name="course"></app-input>
+        <app-select label="Форма обучения" [options]="formOptions" [(ngModel)]="formData.form" name="form"></app-select>
+        <app-input label="Дата зачисления" type="date" [(ngModel)]="formData.startDate" name="startDate"></app-input>
+        <app-input label="Срок обучения" type="date" [(ngModel)]="formData.endDate" name="endDate"></app-input>
+        <app-input label="Приказ о зачислении" type="file"></app-input>
+      </div>
+      <div class="flex justify-end gap-2">
+        <app-button variant="outline" type="button" (clicked)="closeModal()">Отмена</app-button>
+        <app-button variant="outline" type="button">Отправить на подтверждение</app-button>
+        <app-button variant="primary" type="button" (clicked)="addRecord()">Сохранить</app-button>
+      </div>
+    </form>
+  </app-modal>
+</div>

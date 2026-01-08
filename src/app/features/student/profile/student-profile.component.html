@@ -1,0 +1,38 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900">Мой профиль</h1>
+    <p class="mt-2 text-gray-600">Просмотр и обновление контактных данных</p>
+  </div>
+
+  <app-card title="Личные данные">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <app-input label="ФИО" [ngModel]="profile.fullName" [disabled]="true"></app-input>
+      <app-input label="Дата рождения" type="date" [ngModel]="profile.birthDate" [disabled]="true"></app-input>
+      <app-input label="Документ" [ngModel]="profile.documentId" [disabled]="true"></app-input>
+    </div>
+  </app-card>
+
+  <app-card title="Контакты">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <app-input label="Телефон" [(ngModel)]="profile.phone"></app-input>
+      <app-input label="Email" type="email" [(ngModel)]="profile.email"></app-input>
+    </div>
+    <div class="mt-4">
+      <app-input label="Адрес фактического проживания" [(ngModel)]="profile.address"></app-input>
+    </div>
+    <div class="mt-4 flex justify-end">
+      <app-button variant="primary">Сохранить</app-button>
+    </div>
+  </app-card>
+
+  <app-card title="История изменений">
+    <div class="space-y-2 text-sm text-gray-700">
+      @for (item of history; track item.id) {
+        <div class="flex items-center justify-between border-b border-gray-100 pb-2">
+          <div>{{ item.field }}</div>
+          <div class="text-gray-500">{{ item.date }} • {{ item.user }}</div>
+        </div>
+      }
+    </div>
+  </app-card>
+</div>

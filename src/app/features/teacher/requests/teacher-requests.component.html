@@ -1,0 +1,45 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900">Заявки студентов</h1>
+    <p class="mt-2 text-gray-600">Обработка обращений и подтверждений</p>
+  </div>
+
+  <app-card title="Входящие заявки">
+    <app-table
+      [columns]="columns"
+      [data]="requests"
+      [rowTemplate]="rowTemplate"
+      [actionsTemplate]="actionsTemplate"
+      [emptyMessage]="'Заявки не найдены'"
+    >
+      <ng-template #rowTemplate let-row>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.student }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.type }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.date }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">
+          <span
+            class="px-2 py-1 text-xs rounded-full"
+            [class.bg-yellow-100]="row.status === 'pending'"
+            [class.text-yellow-700]="row.status === 'pending'"
+            [class.bg-green-100]="row.status === 'approved'"
+            [class.text-green-700]="row.status === 'approved'"
+            [class.bg-red-100]="row.status === 'rejected'"
+            [class.text-red-700]="row.status === 'rejected'"
+            [class.bg-gray-100]="row.status === 'needs_work'"
+            [class.text-gray-600]="row.status === 'needs_work'"
+          >
+            {{ getStatusLabel(row.status) }}
+          </span>
+        </td>
+      </ng-template>
+
+      <ng-template #actionsTemplate let-row>
+        <div class="flex items-center gap-2">
+          <app-button variant="success" size="sm" (clicked)="updateStatus(row, 'approved')">Принять</app-button>
+          <app-button variant="outline" size="sm" (clicked)="updateStatus(row, 'needs_work')">Доработка</app-button>
+          <app-button variant="danger" size="sm" (clicked)="updateStatus(row, 'rejected')">Отклонить</app-button>
+        </div>
+      </ng-template>
+    </app-table>
+  </app-card>
+</div>

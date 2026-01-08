@@ -1,0 +1,42 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900">Настройки</h1>
+    <p class="mt-2 text-gray-600">Безопасность и уведомления</p>
+  </div>
+
+  <app-card title="Смена пароля">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <app-input label="Текущий пароль" type="password"></app-input>
+      <app-input label="Новый пароль" type="password"></app-input>
+      <app-input label="Повторите пароль" type="password"></app-input>
+    </div>
+    <div class="mt-4 flex justify-end">
+      <app-button variant="primary">Сохранить</app-button>
+    </div>
+  </app-card>
+
+  <app-card title="Язык интерфейса">
+    <app-select
+      label="Язык"
+      [options]="languageOptions"
+      [(ngModel)]="language"
+    ></app-select>
+  </app-card>
+
+  <app-card title="Уведомления">
+    <div class="space-y-3 text-sm text-gray-700">
+      <label class="flex items-center gap-2">
+        <input type="checkbox" [(ngModel)]="emailNotify" />
+        Email-уведомления
+      </label>
+      <label class="flex items-center gap-2">
+        <input type="checkbox" [(ngModel)]="smsNotify" />
+        SMS-уведомления
+      </label>
+      <label class="flex items-center gap-2">
+        <input type="checkbox" [(ngModel)]="appNotify" />
+        Внутрисистемные уведомления
+      </label>
+    </div>
+  </app-card>
+</div>

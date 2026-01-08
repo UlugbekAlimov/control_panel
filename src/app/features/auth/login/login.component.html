@@ -1,0 +1,36 @@
+<div class="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+  <app-card class="w-full max-w-md">
+    <div class="text-center">
+      <h1 class="text-2xl font-bold text-gray-900">Вход в систему</h1>
+      <p class="mt-2 text-gray-600">
+        {{ roleLocked ? 'Введите данные для входа' : 'Выберите роль и войдите' }}
+      </p>
+    </div>
+
+    <div class="mt-6 space-y-4">
+      <app-input
+        label="Email"
+        type="email"
+        [(ngModel)]="email"
+        placeholder="student@example.com"
+      ></app-input>
+      <app-input
+        label="Пароль"
+        type="password"
+        [(ngModel)]="password"
+        placeholder="••••••••"
+      ></app-input>
+      @if (!roleLocked) {
+        <app-select
+          label="Роль"
+          [options]="roleOptions"
+          [(ngModel)]="role"
+        ></app-select>
+      }
+    </div>
+
+    <div class="mt-6">
+      <app-button variant="primary" [fullWidth]="true" (clicked)="submit()">Войти</app-button>
+    </div>
+  </app-card>
+</div>

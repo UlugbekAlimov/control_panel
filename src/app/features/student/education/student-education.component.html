@@ -1,0 +1,75 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900">Образование</h1>
+    <p class="mt-2 text-gray-600">Добавление и обновление данных об обучении</p>
+  </div>
+
+  <app-card title="Новая запись об обучении">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <app-select
+        label="Уровень"
+        [options]="levelOptions"
+        [(ngModel)]="formData.level"
+      ></app-select>
+      <app-select
+        label="Форма обучения"
+        [options]="formOptions"
+        [(ngModel)]="formData.form"
+      ></app-select>
+      <app-input
+        label="Учебное заведение"
+        [(ngModel)]="formData.institution"
+      ></app-input>
+      <app-input
+        label="Дата зачисления"
+        type="date"
+        [(ngModel)]="formData.startDate"
+      ></app-input>
+      <app-input
+        label="Предполагаемое окончание"
+        type="date"
+        [(ngModel)]="formData.endDate"
+      ></app-input>
+    </div>
+    <div class="mt-4 flex items-center justify-between">
+      <div class="text-sm text-gray-600">
+        Право на отсрочку:
+        <span class="font-medium" [class.text-green-600]="defermentIndicator" [class.text-gray-500]="!defermentIndicator">
+          {{ defermentIndicator ? 'Да' : 'Нет' }}
+        </span>
+      </div>
+      <app-button variant="primary" (clicked)="submit()">Отправить на проверку</app-button>
+    </div>
+  </app-card>
+
+  <app-card title="История обучения">
+    <div class="space-y-3">
+      @for (entry of entries; track entry.id) {
+        <div class="border border-gray-200 rounded-lg p-4">
+          <div class="flex items-center justify-between">
+            <div class="font-medium text-gray-900">
+              {{ entry.level }} • {{ entry.form }}
+            </div>
+            <span
+              class="px-2 py-1 text-xs rounded-full"
+              [class.bg-green-100]="entry.status === 'confirmed'"
+              [class.text-green-700]="entry.status === 'confirmed'"
+              [class.bg-yellow-100]="entry.status === 'pending'"
+              [class.text-yellow-700]="entry.status === 'pending'"
+              [class.bg-red-100]="entry.status === 'rejected'"
+              [class.text-red-700]="entry.status === 'rejected'"
+            >
+              {{ statusLabels[entry.status] }}
+            </span>
+          </div>
+          <div class="mt-2 text-sm text-gray-600">
+            {{ entry.institution }}
+          </div>
+          <div class="mt-1 text-sm text-gray-500">
+            {{ entry.startDate }} — {{ entry.endDate || 'не указано' }}
+          </div>
+        </div>
+      }
+    </div>
+  </app-card>
+</div>

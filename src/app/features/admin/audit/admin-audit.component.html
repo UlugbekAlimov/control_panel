@@ -1,0 +1,10 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900">Журнал событий и аудит</h1>
+    <p class="mt-2 text-gray-600">Полный лог действий по отсрочкам и документам</p>
+  </div>
+
+  <app-card>
+    <app-table [columns]="columns" [data]="rows" [emptyMessage]="'Событий нет'"></app-table>
+  </app-card>
+</div>

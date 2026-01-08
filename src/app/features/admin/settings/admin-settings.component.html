@@ -1,0 +1,33 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900">Настройки и правила</h1>
+    <p class="mt-2 text-gray-600">Валидации, сроки справок, шаблоны уведомлений</p>
+  </div>
+
+  <app-card title="Правила валидации">
+    <label class="flex items-center gap-2 text-sm text-gray-700">
+      <input type="checkbox" [(ngModel)]="requireFullTime" />
+      Очная форма обязательна для отсрочки
+    </label>
+  </app-card>
+
+  <app-card title="Сроки актуальности справок">
+    <app-input
+      label="Срок действия (дней)"
+      type="number"
+      [(ngModel)]="certificateDays"
+    ></app-input>
+  </app-card>
+
+  <app-card title="Шаблоны уведомлений">
+    <app-input label="Шаблон уведомления" [(ngModel)]="notificationTemplate"></app-input>
+  </app-card>
+
+  <app-card title="Причины отказа">
+    <app-select label="Причина по умолчанию" [options]="reasonOptions" [(ngModel)]="rejectionReason"></app-select>
+  </app-card>
+
+  <div class="flex justify-end">
+    <app-button variant="primary">Сохранить</app-button>
+  </div>
+</div>

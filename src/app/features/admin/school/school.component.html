@@ -1,0 +1,152 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Подсистема "Школа"</h1>
+      <p class="mt-2 text-gray-600">Фиксация начала обучения и выпуска из школы</p>
+    </div>
+    <app-button variant="primary" (clicked)="openAddModal()">
+      + Зафиксировать начало обучения
+    </app-button>
+  </div>
+
+  <app-card>
+    <app-table
+      [columns]="columns"
+      [data]="educationRecords()"
+      [rowTemplate]="rowTemplate"
+      [actionsTemplate]="actionsTemplate"
+      [emptyMessage]="'Записи об обучении в школе не найдены'"
+    >
+      <ng-template #rowTemplate let-row>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+          {{ getCitizenName(row.citizenId) }}
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+          {{ row.institutionName }}
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+          {{ formatDate(row.startDate) }}
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+          {{ formatDate(row.endDate) }}
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+          @if (row.isActive) {
+            <span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
+              Активно
+            </span>
+          } @else {
+            <span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">
+              Завершено
+            </span>
+          }
+        </td>
+      </ng-template>
+
+      <ng-template #actionsTemplate let-row>
+        <div class="flex items-center gap-2">
+          @if (row.isActive) {
+            <app-button variant="success" size="sm" (clicked)="graduateStudent(row)">
+              Зафиксировать выпуск
+            </app-button>
+          }
+          <app-button variant="secondary" size="sm" (clicked)="openEditModal(row)">
+            Редактировать
+          </app-button>
+        </div>
+      </ng-template>
+    </app-table>
+  </app-card>
+
+  <!-- Модальное окно -->
+  <app-modal
+    [show]="showModal()"
+    [title]="editingRecord() ? 'Редактировать запись' : 'Зафиксировать начало обучения'"
+    size="lg"
+    (closed)="closeModal()"
+  >
+    <form class="space-y-4" (ngSubmit)="saveRecord()">
+      <app-select
+        label="Гражданин"
+        [options]="getCitizenOptions()"
+        [(ngModel)]="formData.citizenId"
+        [required]="true"
+        name="citizenId"
+      ></app-select>
+
+      <app-input
+        label="Название учебного заведения"
+        [(ngModel)]="formData.institutionName"
+        [required]="true"
+        name="institutionName"
+      ></app-input>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <app-input
+          label="Дата начала обучения"
+          type="date"
+          [(ngModel)]="formData.startDate"
+          [required]="true"
+          name="startDate"
+        ></app-input>
+        <app-input
+          label="Дата окончания (если выпустился)"
+          type="date"
+          [(ngModel)]="formData.endDate"
+          name="endDate"
+        ></app-input>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <app-input
+          label="Номер документа"
+          [(ngModel)]="formData.documentNumber"
+          name="documentNumber"
+        ></app-input>
+        <app-input
+          label="Дата документа"
+          type="date"
+          [(ngModel)]="formData.documentDate"
+          name="documentDate"
+        ></app-input>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <label class="flex items-center">
+          <input
+            type="checkbox"
+            [(ngModel)]="formData.isActive"
+            name="isActive"
+            class="mr-2"
+          />
+          <span class="text-sm text-gray-700">Активное обучение</span>
+        </label>
+        <label class="flex items-center">
+          <input
+            type="checkbox"
+            [(ngModel)]="formData.hasDeferment"
+            name="hasDeferment"
+            class="mr-2"
+          />
+          <span class="text-sm text-gray-700">Право на отсрочку</span>
+        </label>
+      </div>
+
+      <app-input
+        label="Примечания"
+        [(ngModel)]="formData.notes"
+        name="notes"
+      ></app-input>
+
+      <div class="flex justify-end gap-3 pt-4">
+        <app-button variant="outline" type="button" (clicked)="closeModal()">
+          Отмена
+        </app-button>
+        <app-button variant="primary" type="submit">
+          {{ editingRecord() ? 'Сохранить' : 'Добавить' }}
+        </app-button>
+      </div>
+    </form>
+  </app-modal>
+</div>
+

@@ -1,0 +1,47 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Пользователи и доступы</h1>
+      <p class="mt-2 text-gray-600">Создание аккаунтов и управление ролями</p>
+    </div>
+    <app-button variant="primary" (clicked)="openAdd()">Добавить пользователя</app-button>
+  </div>
+
+  <app-card>
+    <app-table
+      [columns]="columns"
+      [data]="users"
+      [rowTemplate]="rowTemplate"
+      [actionsTemplate]="actionsTemplate"
+      [emptyMessage]="'Пользователей нет'"
+    >
+      <ng-template #rowTemplate let-row>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.fullName }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.email }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ getRoleLabel(row.role) }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.status === 'active' ? 'Активен' : 'Заблокирован' }}</td>
+      </ng-template>
+
+      <ng-template #actionsTemplate let-row>
+        <div class="flex items-center gap-2">
+          <app-button variant="outline" size="sm" (clicked)="openEdit(row)">Редактировать</app-button>
+          <app-button variant="danger" size="sm" (clicked)="toggleStatus(row)">
+            {{ row.status === 'active' ? 'Блокировать' : 'Разблокировать' }}
+          </app-button>
+        </div>
+      </ng-template>
+    </app-table>
+  </app-card>
+
+  <app-modal [show]="showModal" [title]="editing ? 'Редактировать пользователя' : 'Добавить пользователя'" size="lg" (closed)="closeModal()">
+    <form class="space-y-4">
+      <app-input label="ФИО" [(ngModel)]="formData.fullName" name="fullName"></app-input>
+      <app-input label="Email" [(ngModel)]="formData.email" name="email"></app-input>
+      <app-select label="Роль" [options]="roleOptions" [(ngModel)]="formData.role" name="role"></app-select>
+      <div class="flex justify-end gap-2">
+        <app-button variant="outline" type="button" (clicked)="closeModal()">Отмена</app-button>
+        <app-button variant="primary" type="button" (clicked)="save()">Сохранить</app-button>
+      </div>
+    </form>
+  </app-modal>
+</div>

@@ -1,0 +1,51 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900">Панель преподавателя</h1>
+    <p class="mt-2 text-gray-600">Ключевые события и задачи по подтверждению обучения</p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <app-card title="Моя организация">
+      <div class="text-sm text-gray-600">Колледж / ВУЗ</div>
+      <div class="text-xl font-semibold text-gray-900">Политехнический колледж №1</div>
+      <div class="mt-2 text-sm text-gray-500">Доступ: только к своим группам</div>
+    </app-card>
+    <app-card title="Студенты">
+      <div class="text-3xl font-bold text-blue-700">128</div>
+      <div class="text-sm text-gray-600 mt-2">Очная форма: 92</div>
+    </app-card>
+    <app-card title="Быстрые действия">
+      <div class="space-y-2">
+        <app-button variant="primary">Открыть реестр</app-button>
+        <app-button variant="outline">Проверить заявки</app-button>
+      </div>
+    </app-card>
+  </div>
+
+  <app-card title="Быстрые предупреждения">
+    <div class="space-y-2">
+      @for (alert of alerts; track alert.id) {
+        <div
+          class="rounded-lg px-4 py-3 text-sm"
+          [class.bg-yellow-50]="alert.type === 'warning'"
+          [class.text-yellow-800]="alert.type === 'warning'"
+          [class.bg-blue-50]="alert.type === 'info'"
+          [class.text-blue-800]="alert.type === 'info'"
+        >
+          {{ alert.message }}
+        </div>
+      }
+    </div>
+  </app-card>
+
+  <app-card title="Последние уведомления">
+    <div class="space-y-3">
+      @for (item of notifications; track item.id) {
+        <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+          <div class="font-medium text-gray-900">{{ item.title }}</div>
+          <div class="text-sm text-gray-500">{{ item.date }}</div>
+        </div>
+      }
+    </div>
+  </app-card>
+</div>

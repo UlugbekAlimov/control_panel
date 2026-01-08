@@ -1,0 +1,17 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Отчеты</h1>
+      <p class="mt-2 text-gray-600">Минимальные выгрузки по обучению</p>
+    </div>
+    <app-button variant="outline">Экспорт PDF/Excel</app-button>
+  </div>
+
+  <app-card title="Активные студенты очной формы">
+    <app-table [columns]="activeColumns" [data]="activeStudents" [emptyMessage]="'Нет данных'"></app-table>
+  </app-card>
+
+  <app-card title="Отчисленные за период">
+    <app-table [columns]="expelledColumns" [data]="expelledStudents" [emptyMessage]="'Нет данных'"></app-table>
+  </app-card>
+</div>

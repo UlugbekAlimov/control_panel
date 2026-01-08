@@ -1,0 +1,73 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Отчеты</h1>
+      <p class="mt-2 text-gray-600">Списки для рассылки повесток и контроль уклонистов</p>
+    </div>
+    <app-button variant="outline" (clicked)="loadData()">Обновить данные</app-button>
+  </div>
+  <div class="mb-4">
+    <app-card title="Список для рассылки повесток" subtitle="Призывники без активной отсрочки">
+      <app-table
+        [columns]="columns"
+        [data]="getDraftList()"
+        [rowTemplate]="rowTemplate"
+        [emptyMessage]="'Кандидаты для повесток не найдены'"
+      >
+        <ng-template #rowTemplate let-row>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            {{ getFullName(row) }}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            {{ formatDate(row.birthDate) }}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            {{ getAge(row.birthDate) }}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            {{ getStatusLabel(row.status) }}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            {{ hasActiveDeferment(row.id) ? 'Есть' : 'Нет' }}
+          </td>
+          <td class="px-6 py-4 text-sm text-gray-900">
+            {{ row.registrationAddress }}
+          </td>
+        </ng-template>
+      </app-table>
+    </app-card>
+  </div>
+
+  <app-card title="Уклонисты" subtitle="Требуют проверки явки и уточнения оснований">
+    <div class="text-sm text-gray-500 mb-4">
+      Кандидаты: статус «Призывник», старше 18 лет, без активной отсрочки.
+    </div>
+    <app-table
+      [columns]="columns"
+      [data]="getEvaders()"
+      [rowTemplate]="rowTemplate"
+      [emptyMessage]="'Уклонисты не найдены'"
+    >
+      <ng-template #rowTemplate let-row>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+          {{ getFullName(row) }}
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+          {{ formatDate(row.birthDate) }}
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+          {{ getAge(row.birthDate) }}
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+          {{ getStatusLabel(row.status) }}
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+          {{ hasActiveDeferment(row.id) ? 'Есть' : 'Нет' }}
+        </td>
+        <td class="px-6 py-4 text-sm text-gray-900">
+          {{ row.registrationAddress }}
+        </td>
+      </ng-template>
+    </app-table>
+  </app-card>
+</div>

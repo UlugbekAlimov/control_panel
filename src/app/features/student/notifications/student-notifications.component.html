@@ -1,0 +1,31 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Уведомления</h1>
+      <p class="mt-2 text-gray-600">События по отсрочке и документам</p>
+    </div>
+    <app-button variant="outline" (clicked)="markAllRead()">Отметить прочитанными</app-button>
+  </div>
+
+  <app-card>
+    <div class="space-y-3">
+      @for (item of notifications; track item.id) {
+        <div class="flex items-start justify-between border-b border-gray-100 pb-3">
+          <div>
+            <div class="font-medium text-gray-900">{{ item.title }}</div>
+            <div class="text-sm text-gray-500">{{ item.date }}</div>
+          </div>
+          <span
+            class="px-2 py-1 text-xs rounded-full"
+            [class.bg-blue-100]="!item.read"
+            [class.text-blue-700]="!item.read"
+            [class.bg-gray-100]="item.read"
+            [class.text-gray-600]="item.read"
+          >
+            {{ item.read ? 'Прочитано' : 'Новое' }}
+          </span>
+        </div>
+      }
+    </div>
+  </app-card>
+</div>

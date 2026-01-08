@@ -1,0 +1,53 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900">Документы</h1>
+    <p class="mt-2 text-gray-600">Загрузка справок и приказов</p>
+  </div>
+
+  <app-card title="Загрузить документ">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <app-select
+        label="Тип документа"
+        [options]="typeOptions"
+        [(ngModel)]="uploadType"
+      ></app-select>
+      <app-input label="Файл" type="file"></app-input>
+    </div>
+    <div class="mt-4">
+      <app-input label="Комментарий" [(ngModel)]="notes"></app-input>
+    </div>
+    <div class="mt-4 flex justify-end">
+      <app-button variant="primary">Отправить</app-button>
+    </div>
+  </app-card>
+
+  <app-card title="Список документов">
+    <app-table
+      [columns]="columns"
+      [data]="documents"
+      [rowTemplate]="rowTemplate"
+      [emptyMessage]="'Документы не найдены'"
+    >
+      <ng-template #rowTemplate let-row>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ row.name }}</td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ row.type }}</td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+          <span
+            class="px-2 py-1 text-xs rounded-full"
+            [class.bg-yellow-100]="row.status === 'pending'"
+            [class.text-yellow-700]="row.status === 'pending'"
+            [class.bg-green-100]="row.status === 'approved'"
+            [class.text-green-700]="row.status === 'approved'"
+            [class.bg-red-100]="row.status === 'rejected'"
+            [class.text-red-700]="row.status === 'rejected'"
+            [class.bg-gray-100]="row.status === 'expired'"
+            [class.text-gray-600]="row.status === 'expired'"
+          >
+            {{ getStatusLabel(row.status) }}
+          </span>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ row.updatedAt }}</td>
+      </ng-template>
+    </app-table>
+  </app-card>
+</div>

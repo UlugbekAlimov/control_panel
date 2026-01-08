@@ -1,0 +1,41 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Управление организациями</h1>
+      <p class="mt-2 text-gray-600">Школы, колледжи и ВУЗы</p>
+    </div>
+    <app-button variant="primary" (clicked)="openAdd()">Добавить учреждение</app-button>
+  </div>
+
+  <app-card>
+    <app-table
+      [columns]="columns"
+      [data]="organizations"
+      [rowTemplate]="rowTemplate"
+      [actionsTemplate]="actionsTemplate"
+      [emptyMessage]="'Учреждений нет'"
+    >
+      <ng-template #rowTemplate let-row>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.name }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.type }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.city }}</td>
+      </ng-template>
+
+      <ng-template #actionsTemplate let-row>
+        <app-button variant="outline" size="sm" (clicked)="openEdit(row)">Редактировать</app-button>
+      </ng-template>
+    </app-table>
+  </app-card>
+
+  <app-modal [show]="showModal" [title]="editing ? 'Редактировать учреждение' : 'Добавить учреждение'" size="lg" (closed)="closeModal()">
+    <form class="space-y-4">
+      <app-input label="Название" [(ngModel)]="formData.name" name="name"></app-input>
+      <app-select label="Тип" [options]="typeOptions" [(ngModel)]="formData.type" name="type"></app-select>
+      <app-input label="Город" [(ngModel)]="formData.city" name="city"></app-input>
+      <div class="flex justify-end gap-2">
+        <app-button variant="outline" type="button" (clicked)="closeModal()">Отмена</app-button>
+        <app-button variant="primary" type="button" (clicked)="save()">Сохранить</app-button>
+      </div>
+    </form>
+  </app-modal>
+</div>

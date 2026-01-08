@@ -1,0 +1,14 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900">История и аудит</h1>
+    <p class="mt-2 text-gray-600">История статусов обучения и лог изменений</p>
+  </div>
+
+  <app-card title="История статусов обучения">
+    <app-table [columns]="statusColumns" [data]="statusHistory" [emptyMessage]="'Нет данных'"></app-table>
+  </app-card>
+
+  <app-card title="Лог изменений">
+    <app-table [columns]="auditColumns" [data]="auditLog" [emptyMessage]="'Нет данных'"></app-table>
+  </app-card>
+</div>
