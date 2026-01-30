@@ -14,3 +14,4 @@ export class CardComponent {
   @Input() padding: boolean = true;
 }
 
+

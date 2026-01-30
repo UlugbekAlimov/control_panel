@@ -1,0 +1,58 @@
+﻿@if (record()) {
+  <div class="space-y-6">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">Акт № {{ record()!.actNumber }}</h1>
+        <p class="mt-2 text-gray-600">{{ getTypeLabel(record()!.type) }} · {{ record()!.actDate }}</p>
+      </div>
+      <app-button variant="outline" (clicked)="goBack()">Назад к реестру</app-button>
+    </div>
+
+    <app-card title="Сводка">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-900">
+        <div>
+          <span class="text-gray-500">Статус:</span>
+          <div class="font-medium">{{ getStatusLabel(record()!.status) }}</div>
+        </div>
+        <div>
+          <span class="text-gray-500">Тип акта:</span>
+          <div class="font-medium">{{ getTypeLabel(record()!.type) }}</div>
+        </div>
+        <div>
+          <span class="text-gray-500">Дата акта:</span>
+          <div class="font-medium">{{ record()!.actDate }}</div>
+        </div>
+      </div>
+    </app-card>
+
+    <app-card title="Детали">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-900">
+        @for (item of (record()!.details | keyvalue); track item.key) {
+          <div>
+            <span class="text-gray-500">{{ item.key }}:</span>
+            <div class="font-medium">{{ item.value }}</div>
+          </div>
+        }
+      </div>
+    </app-card>
+
+    <app-card title="Журнал изменений">
+      <ul class="space-y-2 text-sm text-gray-700">
+        @for (item of record()!.history; track item.date) {
+          <li class="flex items-center gap-2">
+            <span class="text-gray-500">{{ item.date }}</span>
+            <span>—</span>
+            <span>{{ item.action }}</span>
+          </li>
+        }
+      </ul>
+    </app-card>
+
+    <app-citizen-read-card [citizen]="record()!.citizen"></app-citizen-read-card>
+  </div>
+} @else {
+  <div class="space-y-4">
+    <h1 class="text-2xl font-bold text-gray-900">Акт не найден</h1>
+    <app-button variant="outline" (clicked)="goBack()">Вернуться к реестру</app-button>
+  </div>
+}

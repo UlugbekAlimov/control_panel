@@ -1,0 +1,51 @@
+﻿<div class="space-y-6">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Реестр пересечений</h1>
+      <p class="mt-2 text-gray-600">Фиксация выезда/въезда и контроль статуса «За границей».</p>
+    </div>
+    <app-button variant="primary" (clicked)="openCreate()">Новая запись</app-button>
+  </div>
+
+  <app-card>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <app-input label="ФИО" placeholder="Фамилия Имя" [(ngModel)]="filters.fullName"></app-input>
+      <app-input label="Citizen ID" placeholder="CIT-000001" [(ngModel)]="filters.citizenId"></app-input>
+      <app-select label="Тип" [options]="typeOptions" [(ngModel)]="filters.type"></app-select>
+    </div>
+  </app-card>
+
+  <app-card>
+    <app-table
+      [columns]="columns"
+      [data]="filteredCrossings"
+      [rowTemplate]="rowTemplate"
+      [actionsTemplate]="actionsTemplate"
+      [emptyMessage]="'Записей нет'"
+    >
+      <ng-template #rowTemplate let-row>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.fullName }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.citizenId }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.crossingDate }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ getTypeLabel(row.type) }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.country }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.checkpoint }}</td>
+      </ng-template>
+
+      <ng-template #actionsTemplate let-row>
+        <div class="flex flex-wrap items-center gap-2">
+          <app-button variant="outline" size="sm" (clicked)="selectCitizen(row)">Карточка</app-button>
+          <app-button variant="outline" size="sm" (clicked)="openEdit(row)">Открыть</app-button>
+        </div>
+      </ng-template>
+    </app-table>
+  </app-card>
+
+  <app-citizen-read-card [citizen]="selectedCitizen()"></app-citizen-read-card>
+
+  <app-modal [show]="showModal" [title]="'Пересечение границы'" size="xl" (closed)="closeModal()">
+    @if (showModal) {
+      <app-border-crossing-create-edit [citizen]="selectedCitizen()" [recordId]="selectedRecordId" [embedded]="true" (closed)="closeModal()"></app-border-crossing-create-edit>
+    }
+  </app-modal>
+</div>

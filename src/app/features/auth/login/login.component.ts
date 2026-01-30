@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -20,7 +20,15 @@ export class LoginComponent implements OnInit {
   roleOptions: SelectOption[] = [
     { value: 'student', label: 'Студент' },
     { value: 'teacher', label: 'Преподаватель' },
-    { value: 'admin', label: 'Администратор' }
+    { value: 'admin', label: 'Администратор' },
+    { value: 'maternity', label: 'Роддом' },
+    { value: 'zags', label: 'ЗАГС' },
+    { value: 'identity-residence', label: 'ЖЭК/Паспортный' },
+    { value: 'school', label: 'Школа' },
+    { value: 'university', label: 'ВУЗ/Колледж' },
+    { value: 'clinic', label: 'Медцентр/Поликлиника' },
+    { value: 'vvk', label: 'ВВК' },
+    { value: 'border', label: 'Пограничная служба' }
   ];
 
   constructor(private router: Router, private route: ActivatedRoute) {}
@@ -42,6 +50,39 @@ export class LoginComponent implements OnInit {
       this.router.navigate(['/teacher/dashboard']);
       return;
     }
+    if (this.role === 'maternity') {
+      this.router.navigate(['/maternity/birth-records']);
+      return;
+    }
+    if (this.role === 'zags') {
+      this.router.navigate(['/zags/acts']);
+      return;
+    }
+    if (this.role === 'identity-residence') {
+      this.router.navigate(['/identity-residence/citizens']);
+      return;
+    }
+    if (this.role === 'school') {
+      this.router.navigate(['/school/studies']);
+      return;
+    }
+    if (this.role === 'university') {
+      this.router.navigate(['/university/studies']);
+      return;
+    }
+    if (this.role === 'clinic') {
+      this.router.navigate(['/clinic/records']);
+      return;
+    }
+    if (this.role === 'vvk') {
+      this.router.navigate(['/vvk/queue']);
+      return;
+    }
+    if (this.role === 'border') {
+      this.router.navigate(['/border/crossings']);
+      return;
+    }
     this.router.navigate(['/student/dashboard']);
   }
 }
+

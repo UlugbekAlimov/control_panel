@@ -1,0 +1,37 @@
+﻿<div class="space-y-6">
+  <div>
+    <h1 class="text-2xl font-bold text-gray-900">Результат ВВК</h1>
+    <p class="mt-2 text-gray-600">Медосвидетельствование и категория годности.</p>
+  </div>
+
+  <app-card title="Заключение">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <app-input label="Дата освидетельствования" type="date" [(ngModel)]="record.examDate"></app-input>
+      <app-select label="Категория" [options]="categoryOptions" [(ngModel)]="record.category"></app-select>
+      <app-input label="Комментарий" [(ngModel)]="record.notes"></app-input>
+    </div>
+    <div class="mt-4 text-sm text-fuchsia-700">
+      Категория D_UNFIT → статус UNFIT_MEDICAL (приоритетный).
+    </div>
+  </app-card>
+
+  <div class="flex flex-wrap items-center gap-3">
+    <app-button variant="primary" (clicked)="save()">Сохранить</app-button>
+    <app-button variant="secondary" (clicked)="update()">Сохранить изменение</app-button>
+  </div>
+
+  @if (status()) {
+    <app-card>
+      <div class="flex flex-col gap-2 text-sm text-gray-700">
+        <div class="flex items-center gap-2">
+          <span class="font-medium">Статус:</span>
+          <span class="font-semibold text-fuchsia-700">{{ status() }}</span>
+        </div>
+        @if (lastActionAt()) {
+          <div>Последнее действие: {{ lastActionAt() }}</div>
+        }
+      </div>
+    </app-card>
+  }
+</div>
+

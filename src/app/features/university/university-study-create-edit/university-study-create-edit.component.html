@@ -1,0 +1,46 @@
+﻿<div class="space-y-6">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Запись об обучении</h1>
+      <p class="mt-2 text-gray-600">Поступление, изменение курса и отчисление.</p>
+    </div>
+    @if (!embedded) {
+      <app-button variant="outline" (clicked)="goBack()">Назад к списку</app-button>
+    }
+  </div>
+
+  <app-card title="Обучение">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <app-input label="Учебное заведение" [(ngModel)]="record.universityName"></app-input>
+      <app-input label="Факультет" [(ngModel)]="record.faculty"></app-input>
+      <app-input label="Курс" [(ngModel)]="record.course"></app-input>
+      <app-select label="Форма обучения" [options]="formOptions" [(ngModel)]="record.form"></app-select>
+      <app-select label="Статус" [options]="statusOptions" [(ngModel)]="record.status"></app-select>
+      <app-input label="Дата поступления" type="date" [(ngModel)]="record.startDate"></app-input>
+      <app-input label="Дата отчисления" type="date" [(ngModel)]="record.endDate"></app-input>
+    </div>
+    <div class="mt-4 text-sm text-sky-700">
+      Очная форма (ENROLLED + FULL_TIME) дает статус STUDENT_DEFERRED. Отчисление запускает пересчет статуса.
+    </div>
+  </app-card>
+
+  <div class="flex flex-wrap items-center gap-3">
+    <app-button variant="primary" (clicked)="save()">Сохранить</app-button>
+    <app-button variant="secondary" (clicked)="update()">Сохранить изменение</app-button>
+  </div>
+
+  @if (status()) {
+    <app-card>
+      <div class="flex flex-col gap-2 text-sm text-gray-700">
+        <div class="flex items-center gap-2">
+          <span class="font-medium">Статус:</span>
+          <span class="font-semibold text-sky-700">{{ status() }}</span>
+        </div>
+        @if (lastActionAt()) {
+          <div>Последнее действие: {{ lastActionAt() }}</div>
+        }
+      </div>
+    </app-card>
+  }
+</div>
+

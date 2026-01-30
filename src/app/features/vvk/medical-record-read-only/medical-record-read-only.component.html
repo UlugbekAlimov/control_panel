@@ -1,0 +1,21 @@
+﻿<div class="space-y-4">
+  <app-card title="История болезни (read-only)">
+    <div class="text-sm text-gray-600">Пациент: {{ citizenName }}</div>
+  </app-card>
+
+  <app-card>
+    <app-table
+      [columns]="columns"
+      [data]="visits"
+      [rowTemplate]="rowTemplate"
+      [emptyMessage]="'Записей нет'"
+    >
+      <ng-template #rowTemplate let-row>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.date }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.doctor }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.diagnosis }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.notes }}</td>
+      </ng-template>
+    </app-table>
+  </app-card>
+</div>

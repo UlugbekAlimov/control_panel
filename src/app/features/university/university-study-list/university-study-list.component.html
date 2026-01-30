@@ -1,0 +1,49 @@
+﻿<div class="space-y-6">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Реестр обучения</h1>
+      <p class="mt-2 text-gray-600">Поступления и отчисления студентов (очная форма влияет на отсрочку).</p>
+    </div>
+    <app-button variant="primary" (clicked)="openCreate()">Поступление</app-button>
+  </div>
+
+  <app-card>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <app-input label="ФИО" placeholder="Фамилия Имя" [(ngModel)]="filters.fullName"></app-input>
+      <app-input label="Факультет" placeholder="Информатика" [(ngModel)]="filters.faculty"></app-input>
+      <app-select label="Статус" [options]="statusOptions" [(ngModel)]="filters.status"></app-select>
+    </div>
+  </app-card>
+
+  <app-card>
+    <app-table
+      [columns]="columns"
+      [data]="filteredRecords"
+      [rowTemplate]="rowTemplate"
+      [actionsTemplate]="actionsTemplate"
+      [emptyMessage]="'Записей нет'"
+    >
+      <ng-template #rowTemplate let-row>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.fullName }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.faculty }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.course }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ getFormLabel(row.form) }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.startDate }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.endDate || '-' }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ getStatusLabel(row.status) }}</td>
+      </ng-template>
+
+      <ng-template #actionsTemplate let-row>
+        <div class="flex items-center gap-2">
+          <app-button variant="outline" size="sm" (clicked)="openEdit(row)">Открыть</app-button>
+        </div>
+      </ng-template>
+    </app-table>
+  </app-card>
+
+  <app-modal [show]="showModal" [title]="'Поступление / отчисление'" size="xl" (closed)="closeModal()">
+    @if (showModal) {
+      <app-university-study-create-edit [recordId]="selectedRecordId" [embedded]="true" (closed)="closeModal()"></app-university-study-create-edit>
+    }
+  </app-modal>
+</div>

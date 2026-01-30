@@ -1,0 +1,56 @@
+﻿<div class="space-y-6">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Реестр рождений</h1>
+      <p class="mt-2 text-gray-600">Записи о рождении вашего учреждения и статус передачи в центральную систему.</p>
+    </div>
+    <app-button variant="primary" (clicked)="openCreate()">Новая запись</app-button>
+  </div>
+
+  <app-card>
+    <div class="text-sm text-gray-600">
+      Доступ ограничен данными роддома. Нет доступа к ВУЗ, поликлинике, ВВК, пограничной службе и другим реестрам.
+    </div>
+  </app-card>
+
+  <app-card>
+    <app-table
+      [columns]="columns"
+      [data]="records"
+      [rowTemplate]="rowTemplate"
+      [actionsTemplate]="actionsTemplate"
+      [emptyMessage]="'Записей о рождении нет'"
+    >
+      <ng-template #rowTemplate let-row>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.birthDateTime }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.motherFullName }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.fatherFullName }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ getSexLabel(row.sex) }}</td>
+        <td class="px-6 py-4 text-sm">
+          <span
+            class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+            [ngClass]="{
+              'bg-yellow-100 text-yellow-800': row.status === 'DRAFT',
+              'bg-green-100 text-green-800': row.status === 'SUBMITTED',
+              'bg-red-100 text-red-800': row.status === 'CANCELLED',
+              'bg-gray-100 text-gray-800': row.status === 'VOID'
+            }"
+          >
+            {{ getStatusLabel(row.status) }}
+          </span>
+        </td>
+      </ng-template>
+
+      <ng-template #actionsTemplate let-row>
+        <div class="flex items-center gap-2">
+          <app-button variant="outline" size="sm" (clicked)="openRecord(row)">Открыть</app-button>
+        </div>
+      </ng-template>
+    </app-table>
+  </app-card>
+
+  <app-modal [show]="showCreateModal" [title]="'Новая запись о рождении'" size="xl" (closed)="closeCreate()">
+    <app-birth-record-create></app-birth-record-create>
+  </app-modal>
+</div>
+

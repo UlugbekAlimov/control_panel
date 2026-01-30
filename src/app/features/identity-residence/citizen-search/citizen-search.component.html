@@ -1,0 +1,109 @@
+﻿<div class="space-y-6">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Поиск гражданина</h1>
+      <p class="mt-2 text-gray-600">
+        Поиск и просмотр данных. Создание/удаление гражданина запрещено.
+      </p>
+    </div>
+    <div class="flex flex-wrap items-center gap-2">
+      <app-button variant="outline" (clicked)="openPassport()">Добавить паспорт</app-button>
+      <app-button variant="outline" (clicked)="openAddress()">Добавить адрес</app-button>
+      <app-button variant="outline" (clicked)="openMilOffice()">Добавить военкомат</app-button>
+    </div>
+  </div>
+
+  <app-card>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <app-input
+        label="Citizen ID"
+        placeholder="CIT-000001"
+        [(ngModel)]="filters.citizenId"
+      ></app-input>
+      <app-input label="ИИН" placeholder="800101300123" [(ngModel)]="filters.iin"></app-input>
+      <app-input
+        label="ФИО"
+        placeholder="Фамилия Имя Отчество"
+        [(ngModel)]="filters.fullName"
+      ></app-input>
+      <app-input label="Дата рождения" type="date" [(ngModel)]="filters.birthDate"></app-input>
+    </div>
+  </app-card>
+
+  <app-card>
+    <app-table
+      [columns]="columns"
+      [data]="filteredResults"
+      [rowTemplate]="rowTemplate"
+      [actionsTemplate]="actionsTemplate"
+      [emptyMessage]="'Граждане не найдены'"
+    >
+      <ng-template #rowTemplate let-row>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.id }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.iin }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.fullName }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.birthDate }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.status }}</td>
+      </ng-template>
+
+      <ng-template #actionsTemplate let-row>
+        <div class="flex items-center gap-2">
+          <app-button variant="outline" size="sm" (clicked)="selectCitizen(row)"
+            >Открыть</app-button
+          >
+          <app-button variant="outline" size="sm" (clicked)="openPassportFor(row)"
+            >Паспорт</app-button
+          >
+          <app-button variant="outline" size="sm" (clicked)="openAddressFor(row)">Адрес</app-button>
+          <app-button variant="outline" size="sm" (clicked)="openMilOfficeFor(row)"
+            >Военкомат</app-button
+          >
+        </div>
+      </ng-template>
+    </app-table>
+  </app-card>
+
+  <div class="flex items-center gap-3">
+    <app-button variant="outline" (clicked)="clearSelection()">Очистить выбор</app-button>
+    <span class="text-sm text-gray-500"
+      >Редактирование ограничено идентификационными полями и photo_id.</span
+    >
+  </div>
+
+  <app-citizen-read-card [citizen]="selectedCitizen()"></app-citizen-read-card>
+
+  <app-modal
+    [show]="showPassportModal"
+    [title]="'Паспортные данные'"
+    size="xl"
+    (closed)="closePassport()"
+  >
+    @if (showPassportModal) {
+      <app-passport-create-edit [citizenData]="selectedCitizen()"></app-passport-create-edit>
+    }
+  </app-modal>
+
+  <app-modal
+    [show]="showAddressModal"
+    [title]="'Адрес регистрации'"
+    size="xl"
+    (closed)="closeAddress()"
+  >
+    @if (showAddressModal) {
+      <app-address-create-edit [citizenData]="selectedCitizen()"></app-address-create-edit>
+    }
+  </app-modal>
+
+  <app-modal
+    [show]="showMilOfficeModal"
+    [title]="'Прикрепление к военкомату'"
+    size="xl"
+    (closed)="closeMilOffice()"
+  >
+    @if (showMilOfficeModal) {
+      <app-mil-office-assignment-create-edit
+        [citizenData]="selectedCitizen()"
+      ></app-mil-office-assignment-create-edit>
+    }
+  </app-modal>
+</div>

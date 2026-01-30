@@ -1,0 +1,36 @@
+﻿<div class="space-y-6">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900">Паспортные данные</h1>
+    <p class="mt-2 text-gray-600">Создание и корректировка паспорта. Удаление запрещено.</p>
+  </div>
+
+  <app-card title="Паспорт">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <app-input label="Серия" [(ngModel)]="passport.series"></app-input>
+      <app-input label="Номер" [(ngModel)]="passport.number"></app-input>
+      <app-input label="Кем выдан" [(ngModel)]="passport.issuedBy"></app-input>
+      <app-input label="Дата выдачи" type="date" [(ngModel)]="passport.issueDate"></app-input>
+      <app-input label="Срок действия" type="date" [(ngModel)]="passport.expireDate"></app-input>
+    </div>
+  </app-card>
+
+  <div class="flex flex-wrap items-center gap-3">
+    <app-button variant="primary" (clicked)="save()">Сохранить</app-button>
+    <app-button variant="secondary" (clicked)="update()">Сохранить исправление</app-button>
+  </div>
+
+  @if (status()) {
+    <app-card>
+      <div class="flex flex-col gap-2 text-sm text-gray-700">
+        <div class="flex items-center gap-2">
+          <span class="font-medium">Статус:</span>
+          <span class="font-semibold text-emerald-700">{{ status() }}</span>
+        </div>
+        @if (lastActionAt()) {
+          <div>Последнее действие: {{ lastActionAt() }}</div>
+        }
+      </div>
+    </app-card>
+  }
+</div>
+

@@ -1,0 +1,23 @@
+﻿<div class="space-y-6">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900">История изменений</h1>
+    <p class="mt-2 text-gray-600">Кто и когда менял паспорт, адрес и прикрепление к военкомату.</p>
+  </div>
+
+  <app-card>
+    <app-table
+      [columns]="columns"
+      [data]="entries"
+      [rowTemplate]="rowTemplate"
+      [emptyMessage]="'Записей нет'"
+    >
+      <ng-template #rowTemplate let-row>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.date }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.actor }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ getEntityLabel(row.entity) }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ getActionLabel(row.action) }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.details }}</td>
+      </ng-template>
+    </app-table>
+  </app-card>
+</div>

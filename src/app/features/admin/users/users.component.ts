@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
+﻿import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CardComponent, TableComponent, TableColumn, ButtonComponent, ModalComponent, InputComponent, SelectComponent, SelectOption } from '../../../shared/components';
 
-type UserRole = 'admin' | 'teacher' | 'student';
+type UserRole = 'admin' | 'teacher' | 'student' | 'maternity' | 'zags' | 'identity-residence' | 'school' | 'university' | 'clinic' | 'vvk' | 'border';
 
 interface UserItem {
   id: string;
@@ -33,7 +33,15 @@ export class UsersComponent {
   roleOptions: SelectOption[] = [
     { value: 'admin', label: 'Администратор' },
     { value: 'teacher', label: 'Преподаватель' },
-    { value: 'student', label: 'Студент' }
+    { value: 'student', label: 'Студент' },
+    { value: 'maternity', label: 'Роддом' },
+    { value: 'zags', label: 'ЗАГС' },
+    { value: 'identity-residence', label: 'ЖЭК/Паспортный' },
+    { value: 'school', label: 'Школа' },
+    { value: 'university', label: 'ВУЗ/Колледж' },
+    { value: 'clinic', label: 'Медцентр/Поликлиника' },
+    { value: 'vvk', label: 'ВВК' },
+    { value: 'border', label: 'Пограничная служба' }
   ];
 
   columns: TableColumn[] = [
@@ -46,7 +54,15 @@ export class UsersComponent {
   users: UserItem[] = [
     { id: 'u1', fullName: 'Админ Системы', email: 'admin@example.com', role: 'admin', status: 'active' },
     { id: 'u2', fullName: 'Смирнов А.И.', email: 'teacher@example.com', role: 'teacher', status: 'active' },
-    { id: 'u3', fullName: 'Иванов И.И.', email: 'student@example.com', role: 'student', status: 'blocked' }
+    { id: 'u3', fullName: 'Иванов И.И.', email: 'student@example.com', role: 'student', status: 'blocked' },
+    { id: 'u4', fullName: 'ГКБ №12 Роддом', email: 'maternity@example.com', role: 'maternity', status: 'active' },
+    { id: 'u5', fullName: 'ЗАГС Центральный', email: 'zags@example.com', role: 'zags', status: 'active' },
+    { id: 'u6', fullName: 'ЖЭК Центральный', email: 'residence@example.com', role: 'identity-residence', status: 'active' },
+    { id: 'u7', fullName: 'Школа №21', email: 'school@example.com', role: 'school', status: 'active' },
+    { id: 'u8', fullName: 'Колледж №3', email: 'university@example.com', role: 'university', status: 'active' },
+    { id: 'u9', fullName: 'Поликлиника №1', email: 'clinic@example.com', role: 'clinic', status: 'active' },
+    { id: 'u10', fullName: 'ВВК Центральная', email: 'vvk@example.com', role: 'vvk', status: 'active' },
+    { id: 'u11', fullName: 'Пограничная служба', email: 'border@example.com', role: 'border', status: 'active' }
   ];
 
   openAdd(): void {
@@ -90,8 +106,17 @@ export class UsersComponent {
     const labels: Record<UserRole, string> = {
       admin: 'Администратор',
       teacher: 'Преподаватель',
-      student: 'Студент'
+      student: 'Студент',
+      maternity: 'Роддом',
+      zags: 'ЗАГС',
+      'identity-residence': 'ЖЭК/Паспортный',
+      school: 'Школа',
+      university: 'ВУЗ/Колледж',
+      clinic: 'Медцентр/Поликлиника',
+      vvk: 'ВВК',
+      border: 'Пограничная служба'
     };
     return labels[role] || role;
   }
 }
+

@@ -1,0 +1,45 @@
+﻿<div class="space-y-6">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Реестр актов</h1>
+      <p class="mt-2 text-gray-600">Регистрация актов рождения, брака, детей и смерти с передачей в систему.</p>
+    </div>
+    <app-button variant="primary" (clicked)="openCreate()">Новая регистрация</app-button>
+  </div>
+
+  <app-card>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <app-select label="Тип акта" [options]="typeOptions" [(ngModel)]="filters.type"></app-select>
+      <app-input label="Дата" type="date" [(ngModel)]="filters.date"></app-input>
+      <app-input label="Акт №" placeholder="А-2026-001" [(ngModel)]="filters.actNumber"></app-input>
+    </div>
+  </app-card>
+
+  <app-card>
+    <app-table
+      [columns]="columns"
+      [data]="filteredRecords"
+      [rowTemplate]="rowTemplate"
+      [actionsTemplate]="actionsTemplate"
+      [emptyMessage]="'Акты не найдены'"
+    >
+      <ng-template #rowTemplate let-row>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.actDate }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.actNumber }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ getTypeLabel(row.type) }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.subject }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ getStatusLabel(row.status) }}</td>
+      </ng-template>
+
+      <ng-template #actionsTemplate let-row>
+        <div class="flex items-center gap-2">
+          <app-button variant="outline" size="sm" (clicked)="openRecord(row)">Открыть</app-button>
+        </div>
+      </ng-template>
+    </app-table>
+  </app-card>
+
+  <app-modal [show]="showCreateModal" [title]="'Регистрация акта'" size="xl" (closed)="closeCreate()">
+    <app-zags-act-create></app-zags-act-create>
+  </app-modal>
+</div>

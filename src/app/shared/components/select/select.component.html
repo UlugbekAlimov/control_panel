@@ -7,7 +7,7 @@
       }
     </label>
   }
-  
+
   <select
     [id]="selectId"
     [disabled]="disabled"
@@ -29,9 +29,8 @@
   @if (error) {
     <p class="mt-1 text-sm text-red-600">{{ error }}</p>
   }
-  
+
   @if (hint && !error) {
     <p class="mt-1 text-sm text-gray-500">{{ hint }}</p>
   }
 </div>
-
