@@ -1,30 +1,31 @@
-﻿import { Component, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+﻿import { CommonModule } from '@angular/common';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { TimeoutError, catchError, finalize, forkJoin, of, timeout } from 'rxjs';
+import { BorderCrossingService } from '../../../services/border-crossing.service';
 import {
+  ButtonComponent,
   CardComponent,
-  TableComponent,
   InputComponent,
+  ModalComponent,
   SelectComponent,
   SelectOption,
-  ButtonComponent,
-  ModalComponent,
+  TableComponent,
   type TableColumn,
 } from '../../../shared/components';
-import {
-  CitizenReadCardComponent,
-  CitizenReadCardData,
-} from '../components/citizen-read-card/citizen-read-card.component';
 import { BorderCrossingCreateEditComponent } from '../border-crossing-create-edit/border-crossing-create-edit.component';
 
 interface BorderCrossingItem {
-  id: string;
-  citizenId: string;
-  fullName: string;
-  crossingDate: string;
-  type: 'EXIT' | 'ENTRY';
+  id: number;
+  peopleId: number;
+  peopleName: string;
+  userId: number;
+  userName: string;
+  departureDate: string;
+  returnDate: string;
+  outsideBorder: 'Да' | 'Нет';
   country: string;
-  checkpoint: string;
+  description: string;
 }
 
 @Component({
@@ -39,85 +40,115 @@ interface BorderCrossingItem {
     SelectComponent,
     ButtonComponent,
     ModalComponent,
-    CitizenReadCardComponent,
     BorderCrossingCreateEditComponent,
   ],
   templateUrl: './border-crossing-list.component.html',
   styleUrl: './border-crossing-list.component.css',
 })
-export class BorderCrossingListComponent {
+export class BorderCrossingListComponent implements OnInit {
   filters = {
-    fullName: '',
-    type: 'all',
+    id: '',
+    outsideBorder: 'all',
   };
 
-  typeOptions: SelectOption[] = [
+  outsideBorderOptions: SelectOption[] = [
     { value: 'all', label: 'Все' },
-    { value: 'EXIT', label: 'Выезд' },
-    { value: 'ENTRY', label: 'Въезд' },
+    { value: 'yes', label: 'Да' },
+    { value: 'no', label: 'Нет' },
   ];
 
   columns: TableColumn[] = [
-    { key: 'fullName', label: 'ФИО', sortable: true },
-    { key: 'crossingDate', label: 'Дата', sortable: true },
-    { key: 'type', label: 'Тип', sortable: true },
+    { key: 'id', label: 'ID', sortable: true },
+    { key: 'peopleName', label: 'Гражданин', sortable: true },
+    { key: 'userName', label: 'Пользователь', sortable: true },
+    { key: 'departureDate', label: 'Выезд', sortable: true },
+    { key: 'returnDate', label: 'Возврат', sortable: true },
+    { key: 'outsideBorder', label: 'Вне границы', sortable: true },
     { key: 'country', label: 'Страна', sortable: true },
-    { key: 'checkpoint', label: 'КПП', sortable: true },
+    { key: 'description', label: 'Описание', sortable: false },
   ];
 
-  crossings: BorderCrossingItem[] = [
-    {
-      id: 'bc-101',
-      citizenId: 'CIT-771102',
-      fullName: 'Иванов Петр Павлович',
-      crossingDate: '25.01.2026',
-      type: 'EXIT',
-      country: 'Кыргызстан',
-      checkpoint: 'КПП Алматы-1',
-    },
-    {
-      id: 'bc-098',
-      citizenId: 'CIT-552901',
-      fullName: 'Соколова Марина Андреевна',
-      crossingDate: '10.06.2025',
-      type: 'ENTRY',
-      country: 'Россия',
-      checkpoint: 'КПП Нур-Султан',
-    },
-    {
-      id: 'bc-095',
-      citizenId: 'CIT-330115',
-      fullName: 'Поляков Сергей Николаевич',
-      crossingDate: '02.05.2025',
-      type: 'EXIT',
-      country: 'Грузия',
-      checkpoint: 'КПП Актау',
-    },
-  ];
+  crossings: BorderCrossingItem[] = [];
+  isLoading = false;
+  isDeleting = false;
+  errorMessage = '';
 
-  selectedCitizen = signal<CitizenReadCardData | null>(null);
   showModal = false;
+  showDeleteModal = false;
   selectedRecordId: string | null = null;
+  deletingRecord: BorderCrossingItem | null = null;
+
+  constructor(
+    private readonly borderCrossingService: BorderCrossingService,
+    private readonly cdr: ChangeDetectorRef,
+  ) {}
+
+  ngOnInit(): void {
+    this.loadCrossings();
+  }
 
   get filteredCrossings(): BorderCrossingItem[] {
-    const byName = this.filters.fullName.toLowerCase();
-    const byType = this.filters.type;
+    const idFilter = this.filters.id.trim();
+    const outsideBorderFilter = this.filters.outsideBorder || 'all';
 
     return this.crossings.filter((item) => {
-      const matchesName = !byName || item.fullName.toLowerCase().includes(byName);
-      const matchesType = byType === 'all' || item.type === byType;
-      return matchesName && matchesType;
+      const matchesId = !idFilter || item.id.toString().includes(idFilter);
+      const matchesOutsideBorder =
+        outsideBorderFilter === 'all' ||
+        (outsideBorderFilter === 'yes' && item.outsideBorder === 'Да') ||
+        (outsideBorderFilter === 'no' && item.outsideBorder === 'Нет');
+
+      return matchesId && matchesOutsideBorder;
     });
   }
 
-  selectCitizen(item: BorderCrossingItem): void {
-    this.selectedCitizen.set({
-      id: item.citizenId,
-      iin: '800101300123',
-      fullName: item.fullName,
-      birthDate: '01.01.1980',
-      status: item.type === 'EXIT' ? 'ABROAD' : 'ACTIVE',
-      lastEntryDate: item.type === 'ENTRY' ? item.crossingDate : null,
+  loadCrossings(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    forkJoin({
+      crossings: this.borderCrossingService.getAll().pipe(timeout(15000)),
+      people: this.borderCrossingService.getPeople().pipe(catchError(() => of([]))),
+      users: this.borderCrossingService.getUsers().pipe(catchError(() => of([]))),
+    }).subscribe({
+      next: ({ crossings, people, users }) => {
+        const peopleMap = new Map<number, string>(
+          people.map((item) => [item.id, item.fullName?.trim() || `ID ${item.id}`]),
+        );
+        const usersMap = new Map<number, string>(
+          users.map((item) => [item.id, item.fullName?.trim() || `ID ${item.id}`]),
+        );
+
+        this.crossings = crossings.map((item) => ({
+          id: item.id,
+          peopleId: item.peopleId,
+          peopleName: peopleMap.get(item.peopleId) ?? `ID ${item.peopleId}`,
+          userId: item.userId,
+          userName: usersMap.get(item.userId) ?? `ID ${item.userId}`,
+          departureDate: this.formatDateTime(item.departureDate),
+          returnDate: item.returnDate ? this.formatDateTime(item.returnDate) : '-',
+          outsideBorder: item.outsideBorder ? 'Да' : 'Нет',
+          country: item.country ?? '-',
+          description: item.description ?? '-',
+        }));
+
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: (error: unknown) => {
+        this.isLoading = false;
+        if (error instanceof TimeoutError) {
+          this.errorMessage = 'Превышено время ожидания ответа API.';
+        } else {
+          this.errorMessage = 'Не удалось загрузить данные пересечений.';
+        }
+        this.crossings = [];
+        this.cdr.detectChanges();
+      },
+      complete: () => {
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
     });
   }
 
@@ -127,8 +158,7 @@ export class BorderCrossingListComponent {
   }
 
   openEdit(item: BorderCrossingItem): void {
-    this.selectCitizen(item);
-    this.selectedRecordId = item.id;
+    this.selectedRecordId = item.id.toString();
     this.showModal = true;
   }
 
@@ -137,7 +167,56 @@ export class BorderCrossingListComponent {
     this.selectedRecordId = null;
   }
 
-  getTypeLabel(type: BorderCrossingItem['type']): string {
-    return type === 'EXIT' ? 'Выезд' : 'Въезд';
+  openDelete(item: BorderCrossingItem): void {
+    this.deletingRecord = item;
+    this.showDeleteModal = true;
+  }
+
+  closeDeleteModal(): void {
+    this.showDeleteModal = false;
+    this.deletingRecord = null;
+  }
+
+  confirmDelete(): void {
+    if (!this.deletingRecord || this.isDeleting) {
+      return;
+    }
+
+    this.isDeleting = true;
+    this.errorMessage = '';
+
+    this.borderCrossingService
+      .delete(this.deletingRecord.id)
+      .pipe(
+        finalize(() => {
+          this.isDeleting = false;
+        }),
+      )
+      .subscribe({
+        next: () => {
+          this.closeDeleteModal();
+          this.loadCrossings();
+        },
+        error: () => {
+          this.errorMessage = 'Не удалось удалить запись.';
+        },
+      });
+  }
+
+  onRecordSaved(): void {
+    this.closeModal();
+    this.loadCrossings();
+  }
+
+  private formatDateTime(dateValue: string | null | undefined): string {
+    if (!dateValue) {
+      return '-';
+    }
+
+    const date = new Date(dateValue);
+    if (Number.isNaN(date.getTime())) {
+      return '-';
+    }
+    return date.toLocaleString('ru-RU');
   }
 }

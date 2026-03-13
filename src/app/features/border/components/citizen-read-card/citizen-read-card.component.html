@@ -1,7 +1,6 @@
 ﻿@if (citizen) {
   <app-card title="Гражданин">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-900">
-
       <div>
         <span class="text-gray-500">ИИН:</span>
         <div class="font-medium">{{ citizen.iin }}</div>
@@ -16,7 +15,14 @@
       </div>
       <div>
         <span class="text-gray-500">Статус:</span>
-        <div class="font-medium" [ngClass]="{ 'text-cyan-700': citizen.status === 'ABROAD', 'text-emerald-700': citizen.status === 'ACTIVE', 'text-red-700': citizen.status !== 'ACTIVE' && citizen.status !== 'ABROAD' }">
+        <div
+          class="font-medium"
+          [ngClass]="{
+            'text-cyan-700': citizen.status === 'ABROAD',
+            'text-emerald-700': citizen.status === 'ACTIVE',
+            'text-red-700': citizen.status !== 'ACTIVE' && citizen.status !== 'ABROAD',
+          }"
+        >
           {{ citizen.status }}
         </div>
       </div>
@@ -26,9 +32,4 @@
       </div>
     </div>
   </app-card>
-} @else {
-  <app-card title="Гражданин">
-    <div class="text-sm text-gray-500">Гражданин не выбран. Выберите запись в реестре пересечений.</div>
-  </app-card>
 }
-

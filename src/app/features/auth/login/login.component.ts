@@ -1,8 +1,17 @@
-﻿import { Component, OnInit } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ButtonComponent, InputComponent, SelectComponent, SelectOption, CardComponent } from '../../../shared/components';
+import { finalize } from 'rxjs';
+import { AuthService, LoginApiResponse } from '../../../services/auth.service';
+import {
+  ButtonComponent,
+  CardComponent,
+  InputComponent,
+  SelectComponent,
+  SelectOption
+} from '../../../shared/components';
 
 @Component({
   selector: 'app-login',
@@ -16,10 +25,12 @@ export class LoginComponent implements OnInit {
   password = '';
   role = 'student';
   roleLocked = false;
+  routeRole: string | null = null;
+  isGeneralLoginRoute = false;
+  isSubmitting = false;
+  submitError = '';
 
   roleOptions: SelectOption[] = [
-    // { value: 'student', label: 'Студент' },
-    // { value: 'teacher', label: 'Преподаватель' },
     { value: 'admin', label: 'Админ' },
     { value: 'maternity', label: 'Роддом' },
     { value: 'zags', label: 'ЗАГС' },
@@ -33,17 +44,123 @@ export class LoginComponent implements OnInit {
     { value: 'superadmin', label: 'Суперадмин' }
   ];
 
-  constructor(private router: Router, private route: ActivatedRoute) {}
+  constructor(
+    private readonly router: Router,
+    private readonly route: ActivatedRoute,
+    private readonly authService: AuthService
+  ) {}
 
   ngOnInit(): void {
+    this.isGeneralLoginRoute = this.router.url.split('?')[0] === '/login';
+
     const roleFromRoute = this.route.snapshot.data['role'] as string | undefined;
     if (roleFromRoute) {
+      this.routeRole = roleFromRoute;
       this.role = roleFromRoute;
       this.roleLocked = true;
     }
   }
 
   submit(): void {
+    const username = this.email.trim();
+    if (!username || !this.password.trim()) {
+      this.submitError = 'Введите логин и пароль.';
+      return;
+    }
+
+    this.submitError = '';
+    this.isSubmitting = true;
+
+    this.authService.login({ username, password: this.password }).pipe(
+      finalize(() => {
+        this.isSubmitting = false;
+      })
+    ).subscribe({
+      next: ({ token, raw }) => {
+        if (raw.success === false) {
+          this.submitError = this.getApiMessage(raw) ?? 'Неверный логин или пароль.';
+          return;
+        }
+
+        if (!token) {
+          this.submitError = 'Токен не получен от сервера.';
+          return;
+        }
+
+        this.authService.saveToken(token);
+        this.applyRoleAfterLogin(username);
+        this.navigateByRole();
+      },
+      error: (error: HttpErrorResponse) => {
+        this.submitError = this.resolveHttpError(error);
+      }
+    });
+  }
+
+  canSelectRole(): boolean {
+    return !this.roleLocked && this.isGeneralLoginRoute;
+  }
+
+  private applyRoleAfterLogin(username: string): void {
+    if (this.routeRole) {
+      this.role = this.routeRole;
+      return;
+    }
+
+    if (this.role !== 'student') {
+      return;
+    }
+
+    const detectedRole = this.detectRoleByUsername(username);
+    if (detectedRole) {
+      this.role = detectedRole;
+    }
+  }
+
+  private detectRoleByUsername(username: string): string | null {
+    const value = username.trim().toLowerCase();
+    const roleByUsername: Record<string, string> = {
+      admin: 'admin',
+      doctor: 'clinic',
+      borderguard: 'border',
+      passportofficer: 'passport',
+      zagsemployee: 'zags',
+      militaryemployee: 'jek',
+      educationemployee: 'school'
+    };
+
+    return roleByUsername[value] ?? null;
+  }
+
+  private getApiMessage(response: LoginApiResponse): string | null {
+    const message = response['message'];
+    if (typeof message === 'string' && message.trim()) {
+      return message;
+    }
+    return null;
+  }
+
+  private resolveHttpError(error: HttpErrorResponse): string {
+    const errorPayload = error.error as Record<string, unknown> | string | null;
+    if (errorPayload && typeof errorPayload === 'object') {
+      const message = errorPayload['message'];
+      if (typeof message === 'string' && message.trim()) {
+        return message;
+      }
+    }
+
+    if (error.status === 0) {
+      return 'Сервер недоступен. Проверьте подключение.';
+    }
+
+    if (typeof errorPayload === 'string' && errorPayload.trim()) {
+      return errorPayload;
+    }
+
+    return 'Ошибка авторизации. Попробуйте еще раз.';
+  }
+
+  private navigateByRole(): void {
     if (this.role === 'admin') {
       this.router.navigate(['/admin/dashboard']);
       return;

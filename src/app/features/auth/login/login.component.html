@@ -9,28 +9,42 @@
 
     <div class="mt-6 space-y-4">
       <app-input
-        label="Email"
-        type="email"
+        label="Логин"
+        type="text"
         [(ngModel)]="email"
-        placeholder="student@example.com"
+        [disabled]="isSubmitting"
+        placeholder="username"
       ></app-input>
       <app-input
         label="Пароль"
         type="password"
         [(ngModel)]="password"
-        placeholder="••••••••"
+        [disabled]="isSubmitting"
+        placeholder="********"
       ></app-input>
-      @if (!roleLocked) {
+      @if (canSelectRole()) {
         <app-select
           label="Роль"
           [options]="roleOptions"
           [(ngModel)]="role"
+          [disabled]="isSubmitting"
         ></app-select>
+      }
+      @if (submitError) {
+        <p class="text-sm text-red-600">{{ submitError }}</p>
       }
     </div>
 
     <div class="mt-6">
-      <app-button variant="primary" [fullWidth]="true" (clicked)="submit()">Войти</app-button>
+      <app-button
+        variant="primary"
+        [fullWidth]="true"
+        [loading]="isSubmitting"
+        [disabled]="isSubmitting"
+        (clicked)="submit()"
+      >
+        Войти
+      </app-button>
     </div>
   </app-card>
 </div>

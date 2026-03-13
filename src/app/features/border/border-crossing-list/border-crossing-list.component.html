@@ -2,48 +2,97 @@
   <div class="flex flex-wrap items-center justify-between gap-3">
     <div>
       <h1 class="text-3xl font-bold text-gray-900">Реестр пересечений</h1>
-      <p class="mt-2 text-gray-600">Фиксация выезда/въезда и контроль статуса «За границей».</p>
+      <p class="mt-2 text-gray-600">Данные загружаются из API пограничной службы.</p>
     </div>
-    <app-button variant="primary" (clicked)="openCreate()">Новая запись</app-button>
+    <div class="flex items-center gap-2">
+      <app-button variant="outline" (clicked)="loadCrossings()">Обновить</app-button>
+      <app-button variant="primary" (clicked)="openCreate()">Новая запись</app-button>
+    </div>
   </div>
 
   <app-card>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <app-input label="ФИО" placeholder="Фамилия Имя" [(ngModel)]="filters.fullName"></app-input>
-      <app-select label="Тип" [options]="typeOptions" [(ngModel)]="filters.type"></app-select>
+      <app-input label="ID" placeholder="Например: 3" [(ngModel)]="filters.id"></app-input>
+      <app-select label="Вне границы" [options]="outsideBorderOptions" [(ngModel)]="filters.outsideBorder"></app-select>
     </div>
   </app-card>
+
+  @if (errorMessage) {
+    <app-card>
+      <p class="text-sm text-red-600">{{ errorMessage }}</p>
+    </app-card>
+  }
 
   <app-card>
     <app-table
       [columns]="columns"
       [data]="filteredCrossings"
+      [loading]="isLoading"
       [rowTemplate]="rowTemplate"
       [actionsTemplate]="actionsTemplate"
       [emptyMessage]="'Записей нет'"
     >
       <ng-template #rowTemplate let-row>
-        <td class="px-6 py-4 text-sm text-gray-900">{{ row.fullName }}</td>
-        <td class="px-6 py-4 text-sm text-gray-900">{{ row.crossingDate }}</td>
-        <td class="px-6 py-4 text-sm text-gray-900">{{ getTypeLabel(row.type) }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.id }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.peopleName }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.userName }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.departureDate }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.returnDate }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.outsideBorder }}</td>
         <td class="px-6 py-4 text-sm text-gray-900">{{ row.country }}</td>
-        <td class="px-6 py-4 text-sm text-gray-900">{{ row.checkpoint }}</td>
+        <td class="px-6 py-4 text-sm text-gray-900">{{ row.description }}</td>
       </ng-template>
 
       <ng-template #actionsTemplate let-row>
         <div class="flex flex-wrap items-center gap-2">
-          <app-button variant="outline" size="sm" (clicked)="selectCitizen(row)">Карточка</app-button>
-          <app-button variant="outline" size="sm" (clicked)="openEdit(row)">Открыть</app-button>
+          <button
+            type="button"
+            class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100"
+            title="Редактировать"
+            (click)="openEdit(row)">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4">
+              <path d="M13.586 3.586a2 2 0 1 1 2.828 2.828l-8.707 8.707a2 2 0 0 1-.878.497l-2.425.693a.75.75 0 0 1-.928-.928l.693-2.425a2 2 0 0 1 .497-.878l8.92-8.494Z"/>
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-red-300 text-red-600 hover:bg-red-50"
+            title="Удалить"
+            (click)="openDelete(row)">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4">
+              <path fill-rule="evenodd" d="M8.75 2.5a1 1 0 0 0-1 1V4h4.5v-.5a1 1 0 0 0-1-1h-2.5Zm-3 3a.75.75 0 0 0 0 1.5h.53l.53 9.28A2 2 0 0 0 8.806 18h2.388a2 2 0 0 0 1.996-1.72l.53-9.28h.53a.75.75 0 0 0 0-1.5h-8.5Z" clip-rule="evenodd"/>
+            </svg>
+          </button>
         </div>
       </ng-template>
     </app-table>
   </app-card>
 
-  <app-citizen-read-card [citizen]="selectedCitizen()"></app-citizen-read-card>
-
-  <app-modal [show]="showModal" [title]="'Пересечение границы'" size="xl" (closed)="closeModal()">
+  <app-modal [show]="showModal" [title]="'Редактирование пересечения'" size="xl" (closed)="closeModal()">
     @if (showModal) {
-      <app-border-crossing-create-edit [citizen]="selectedCitizen()" [recordId]="selectedRecordId" [embedded]="true" (closed)="closeModal()"></app-border-crossing-create-edit>
+      <app-border-crossing-create-edit
+        [citizen]="null"
+        [recordId]="selectedRecordId"
+        [embedded]="true"
+        (saved)="onRecordSaved()"
+        (closed)="closeModal()"
+      ></app-border-crossing-create-edit>
     }
+  </app-modal>
+
+  <app-modal [show]="showDeleteModal" [title]="'Удаление записи'" size="md" (closed)="closeDeleteModal()">
+    <div class="space-y-4">
+      <p class="text-sm text-gray-700">
+        Удалить запись
+        @if (deletingRecord) {
+          <span class="font-semibold">#{{ deletingRecord.id }}</span>
+        }
+        ?
+      </p>
+      <div class="flex items-center justify-end gap-2">
+        <app-button variant="secondary" [disabled]="isDeleting" (clicked)="closeDeleteModal()">Отмена</app-button>
+        <app-button variant="danger" [loading]="isDeleting" [disabled]="isDeleting" (clicked)="confirmDelete()">Удалить</app-button>
+      </div>
+    </div>
   </app-modal>
 </div>
